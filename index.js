@@ -26,6 +26,15 @@ async function run() {
             res.send(inventories);
         })
 
+        //load all inventories for specific user
+        app.get('/myinventory', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = inventoryCollection.find(query);
+            const myinventory = await cursor.toArray();
+            res.send(myinventory);
+        })
+
         //load single inventory
         app.get('/inventory/:id', async (req, res) => {
             const id = req.params.id;
