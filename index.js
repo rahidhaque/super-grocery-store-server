@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
@@ -18,6 +19,15 @@ async function run() {
         await client.connect();
         const inventoryCollection = client.db('warehouse-management').collection('inventory');
 
+        //JWT token authentication
+        app.post('/login', async (req, res) => {
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '20d'
+            })
+            res.send({ accessToken });
+        })
+
         //load all inventories
         app.get('/inventory', async (req, res) => {
             const query = {};
@@ -34,6 +44,7 @@ async function run() {
             const myinventory = await cursor.toArray();
             res.send(myinventory);
         })
+
 
         //load single inventory
         app.get('/inventory/:id', async (req, res) => {
